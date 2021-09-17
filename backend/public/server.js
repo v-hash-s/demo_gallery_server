@@ -1,29 +1,66 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 const http = require('http');
-const fs = require('fs');
-let server = http.createServer((req, res) => {
-    let path = '../frontend';
-    switch (req.url) {
-        case '/login':
-            path += '/index.html';
-            break;
-        case '/gallery':
-            path += '/public/gallery.html';
-            break;
-        default:
-            console.log('nope');
-            break;
+const fs = require("fs");
+const path = require("path");
+const token = {
+    'token': 'token',
+};
+const users = {
+    'asergeev@flo.team': 'jgF5tn4F',
+    'vkotikov@flo.team': 'po3FGas8',
+    'tpupkin@flo.team': 'tpupkin@flo.team',
+};
+const regex = /^\b([0-9A-Z])+\b$/gi;
+class User {
+    constructor(email, password) {
+        this.email = email;
+        this.password = password;
+        this.email = email;
+        this.password = password;
     }
-    console.log(req.url, req.method);
-    res.writeHead(200, { 'Content-Type': 'text/html' });
-    fs.readFile(path, (err, data) => {
-        if (err) {
-            console.log(err);
-        }
+    isCorrectPassword() {
+        if (this.password.match(regex))
+            return true;
         else {
-            res.write(data);
-            res.end();
+            alert("Invalid form of password");
+            return false;
         }
-    });
-}).listen(3000, '127.0.0.1');
+    }
+}
+const requestListener = function (req, res) {
+    var url = req.url;
+    if (req.method == "OPTIONS") {
+        console.log(req);
+        //In case of an OPTIONS, we allow the access to the origin of the petition
+        res.setHeader("Access-Control-Allow-Origin", "no-cors");
+        res.setHeader("Access-Control-Allow-Methods", "POST");
+        res.setHeader("Access-Control-Allow-Headers", "Content-Type, body");
+        res.setHeader("Access-Control-Max-Age", "1728000");
+        res.writeHead(200);
+        res.end();
+    }
+    if (url === "/api/login") {
+        let body = "";
+        req.on("data", (data) => {
+            body += data;
+        });
+        req.on("end", () => {
+            let user_temp = JSON.parse(body);
+            let user = new User(user_temp.email, user_temp.password);
+            if (user_temp.email in users && user_temp.password === users[user_temp.email]) {
+                console.log(token);
+                console.log(req.method);
+                res.end({});
+            }
+        });
+    }
+    // else if (url === "/api/gallery") {
+    // }
+    // else if (url === "/static") {
+    // }
+    res.end();
+};
+const server = http.createServer(requestListener);
+console.log("I'm started");
+server.listen(8080);
