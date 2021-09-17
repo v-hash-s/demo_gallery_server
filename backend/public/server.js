@@ -64,7 +64,12 @@ const requestListener = function (req, res) {
         });
     }
     else if (req.method === "GET") {
-        (0, serverGallery_js_1.sendGalleryObject)(url);
+        res.setHeader('Access-Control-Allow-Methods', "PUT,PATCH,DELETE,POST,GET");
+        res.setHeader("Access-Control-Allow-Headers", "API-Key,Content-Type,If-Modified-Since,Cache-Control,Access-Control-Allow-Methods, Authorization");
+        res.setHeader("Access-Control-Max-Age", "86400");
+        res.setHeader('Access-Control-Allow-Origin', '*');
+        res.writeHead(200);
+        res.end(JSON.stringify((0, serverGallery_js_1.sendGalleryObject)(url)));
     }
     // else if (url === "/static") {
     // }
