@@ -30,7 +30,7 @@ export function sendGalleryObject(url: any){
     console.log(str['page'])
     let pageNumber: number = Number(`${str['page']}`);
     console.log(pageNumber)
-    let dir = path.join('../backend/photos/', folders[pageNumber])
+    let dir = '../backend/photos/' + folders[pageNumber];
     //let folderPath = dirname(`../backend/photos/${folders[pageNumber]}`)
     console.log(dir)
 
@@ -61,7 +61,7 @@ export function sendGalleryObject(url: any){
         let newArr: Array<string> = []
         
         newArr = arr.map((img) => {
-            return path.join(`/Users/user/Desktop/nodejs_gallery/backend/photos/${folders[pageNumber]}`, img)
+            return `http://localhost:8080/photos/${folders[pageNumber]}/` + img;
         })
             console.log(newArr)
             return newArr;
@@ -79,6 +79,8 @@ export function sendGalleryObject(url: any){
     
 
 }    
+
+
 
 
 
