@@ -40,7 +40,7 @@ class User {
 }
 
 const requestListener = function (req: IncomingMessage, res: ServerResponse) {
-  let url = req.url;
+  let url = req.url!;
 
   if (req.method == "OPTIONS")
     {
@@ -52,7 +52,7 @@ const requestListener = function (req: IncomingMessage, res: ServerResponse) {
         res.writeHead(200);
         res.end();
     }
-  if (req.method === "POST") {
+  else if (req.method === "POST") {
     
         let body = "";
         req.on("data", (data) => {
@@ -63,7 +63,6 @@ const requestListener = function (req: IncomingMessage, res: ServerResponse) {
         });
 
         
-//res.end(JSON.stringify(token))
         req.on("end", () => {
           
             let user_temp = JSON.parse(body);
@@ -88,16 +87,19 @@ const requestListener = function (req: IncomingMessage, res: ServerResponse) {
               res.setHeader("Access-Control-Allow-Headers", "API-Key,Content-Type,If-Modified-Since,Cache-Control,Access-Control-Allow-Methods, Authorization")
               res.setHeader("Access-Control-Max-Age", "86400")
               res.setHeader('Access-Control-Allow-Origin', '*')
-              res.writeHead(200);
+    if (url?.startsWith("/photos")) {
+      let stream = fs.createReadStream(path.resolve("." + url!));
+      res.setHeader("Content-Type", "image/jpg");
+      stream.pipe(res);
+    } else {
     res.end(JSON.stringify(sendGalleryObject(url)))
+    }
   }
-  // else if (url === "/static") {
-
-  // }
 
 }
 
 const server = http.createServer(requestListener);
 console.log("I'm started");
 server.listen(8080);
+
 
